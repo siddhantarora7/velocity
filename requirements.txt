@@ -2,3 +2,4 @@ numpy
 opencv-python
 streamlit
 streamlit-image-coordinates
+ultralytics
