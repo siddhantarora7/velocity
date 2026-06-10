@@ -21,7 +21,7 @@ def detect_ball(frame, model, conf):
 
 if __name__ == "__main__":
     model = YOLO("yolov8n.pt")
-    cap = cv2.VideoCapture("data/input/PLACEHOLDER.mp4")
+    cap = cv2.VideoCapture("data/input/velocity_test.mp4")
     ret, frame = cap.read()
 
     if not ret:
