@@ -26,6 +26,8 @@ def run_detection(video_path, output_path, model, conf):
     cap.release()
     out.release()
 
+    return frames, fps
+
 if __name__ == "__main__":
     model = YOLO("yolov8n.pt")
     run_detection("data/input/velocity_test.mp4", "data/output/output_test.mp4", model, 0.25)
