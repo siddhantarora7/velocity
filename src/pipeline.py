@@ -1,4 +1,6 @@
 from detection import detect_ball
+from ultralytics import YOLO
+import cv2
 
 def run_detection(video_path, output_path, model, conf):
     cap = cv2.VideoCapture(video_path)
@@ -13,16 +15,17 @@ def run_detection(video_path, output_path, model, conf):
             break
         idx += 1
         center = detect_ball(frame, model, conf)
-        frames.append((idx, int(center[0]), int(center[1])))
         if center is not None:
+            frames.append((idx, int(center[0]), int(center[1])))
             cv2.circle(frame, (int(center[0]), int(center[1])), 5, (0, 0, 255), -1)
-        cv2.imshow("Frame", frame)
+        out.write(frame)
 
         if idx % 30 == 0:
             print("Frame", idx)
     
     cap.release()
+    out.release()
 
-if __name__ = "__main__":
+if __name__ == "__main__":
     model = YOLO("yolov8n.pt")
     run_detection("data/input/velocity_test.mp4", "data/output/output_test.mp4", model, 0.25)
