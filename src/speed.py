@@ -32,7 +32,7 @@ def compute_speeds(frames, fps, meters_per_pixel=1.0):
         vx0, vy0 = np.polyfit(t, xs, 1)[0], 2*a*t[0] + b
         launch_speed = math.sqrt(vx0**2 + vy0**2) * meters_per_pixel * 3.6
     
-    return {"speeds": speeds, "launch": launch_speed}    
+    return {"speeds": speeds, "launch": launch_speed}
 
 if __name__ == "__main__":
     model = YOLO("yolov8n.pt")
