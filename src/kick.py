@@ -1,20 +1,35 @@
 import math
+import statistics
 
-def kick(smooth, fps, thres, k):
-    first = -1
+def kick(smooth, fps, k = 3, window = 5, floor = 200):
+    first, speeds = -1, []
 
     for i in range(len(smooth) - 1):
-        idx1, x1, cy1 = smooth[i]
-        idx2, x2, cy2 = smooth[i + 1]
+        idx1, x1, y1 = smooth[i]
+        idx2, x2, y2 = smooth[i + 1]
+        pixel_distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+        dt = (idx2 - idx1)/fps
+        pixel_speed = pixel_distance/dt
+        speeds.append(pixel_speed)
+        
+    if not speeds:
+        return None
+    
+    base = statistics.median(speeds)
+    thres = max(5 * base, floor)
+
+    for i in range(len(smooth) - 1):
+        idx1, x1, y1 = smooth[i]
+        idx2, x2, y2 = smooth[i + 1]
         pixel_distance = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
         dt = (idx2 - idx1)/fps
         pixel_speed = pixel_distance/dt
         
-        if pixel_speed >= threshold:
+        if pixel_speed >= thres:
             if first == -1:
                 first = i
-            if i - first + 1 == k:
-                return (first, i)
+            if i - first + 1 >= k:
+                return (first, min(len(smooth) - 1, first + window))
         else:
             first = -1
         
@@ -32,4 +47,4 @@ if __name__ == "__main__":
     if res is None:
         print("No kick detected")
     else:
-        print('Output:', res)
+        print('Output (kick window):', res)
