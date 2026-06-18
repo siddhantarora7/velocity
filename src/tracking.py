@@ -34,9 +34,32 @@ def clean(frames, fps):
     return res
 
 if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+
     model = YOLO("yolov8n.pt")
     frames, fps = run_detection("data/input/velocity_test.mp4", "data/output/output_test.mp4", model, 0.25)
     smooth = clean(frames, fps)
+
+    # debug
+    raw_idx, raw_x, raw_y = [x[0] for x in frames if x[1] is not None], [x[1] for x in frames if x[1] is not None], [x[2] for x in frames if x[2] is not None]
+    smooth_idx, smooth_x, smooth_y = [x[0] for x in frames if x[1] is not None], [x[1] for x in frames if x[1] is not None], [x[2] for x in frames if x[2] is not None]
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex = True)
+    ax1.scatter(raw_idx, raw_x, s = 18, c = "red", label = "Raw X", zorder = 3)
+    ax1.plot(smooth_idx, smooth_x, c = "blue", label = "Smooth X")
+    ax1.set_ylabel("X (px)")
+    ax1.legend()
+    ax1.grid(alpha = 0.3)
+
+    ax2.scatter(raw_idx, raw_y, s = 18, c = "red", label = "Raw Y", zorder = 3)
+    ax2.plot(smooth_idx, smooth_y, c = "blue", label = "Smooth Y")
+    ax2.set_ylabel("Y (px)")
+    ax2.set_xlabel("Frame index")
+    ax2.legend()
+    ax2.grid(alpha = 0.3)
+
+    plt.tight_layout()
+    plt.savefig("data/output/tracking_debug.png", dpi = 120)
+    print("Image saved!")
     
     # Test
     print(f"input frames: {len(frames)}, output frames: {len(smooth)}")
