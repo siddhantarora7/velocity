@@ -15,11 +15,14 @@ def run_detection(video_path, output_path, model, conf):
             break
         idx += 1
         center = detect_ball(frame, model, conf)
-        if center is not None:
-            frames.append((idx, int(center[0]), int(center[1])))
+        if center is None:
+            frames.append((idx, None, None))
+        else:
+            cx, cy = int(center[0]), int(center[1])
+            frames.append((idx, cx, cy))
             cv2.circle(frame, (int(center[0]), int(center[1])), 5, (0, 0, 255), -1)
         out.write(frame)
-
+        
         if idx % 30 == 0:
             print("Frame", idx)
     
