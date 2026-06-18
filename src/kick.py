@@ -16,7 +16,7 @@ def kick(smooth, fps, k = 3, window = 5, floor = 200):
         return None
     
     base = statistics.median(speeds)
-    thres = max(5 * base, floor)
+    thres = max(2.5 * base, floor)
 
     for i in range(len(smooth) - 1):
         idx1, x1, y1 = smooth[i]
@@ -33,6 +33,8 @@ def kick(smooth, fps, k = 3, window = 5, floor = 200):
         else:
             first = -1
         
+    return None
+        
 if __name__ == "__main__":
     from ultralytics import YOLO
     from pipeline import run_detection
@@ -47,4 +49,7 @@ if __name__ == "__main__":
     if res is None:
         print("No kick detected")
     else:
-        print('Output (kick window):', res)
+        print("list indices:", res)
+        print("kick frame idx:", smooth[res[0]][0], "→", smooth[res[1]][0])
+        for i in range(max(0, res[0]-4), res[0]+2):
+            print(i, "frame", smooth[i][0], "→", smooth[i+1][0])
