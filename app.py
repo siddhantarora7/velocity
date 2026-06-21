@@ -26,7 +26,7 @@ app = FastAPI(title = "Velocity API", version = "0.1.0")
 app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://localhost:3000"], allow_methods = ["*"], allow_headers = ["*"])
 
 MODEL = YOLO("yolov8n.pt") # Load model globally
-STORAGE = os.path.join(tempfile.gettempdir(), "velocity storage")
+STORAGE = os.path.join(tempfile.gettempdir(), "velocity_storage")
 os.makedirs(STORAGE, exist_ok = True)
 
 # In-memory Stores
