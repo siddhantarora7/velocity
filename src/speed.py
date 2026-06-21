@@ -5,8 +5,8 @@ import cv2
 import math
 import numpy as np
 from ultralytics import YOLO
-from pipeline import run_detection
-from calibration import compute_scale
+from src.pipeline import run_detection
+from src.calibration import compute_scale
 
 
 def compute_speeds(frames, fps, meters_per_pixel=1.0, window = None):
@@ -34,8 +34,8 @@ def compute_speeds(frames, fps, meters_per_pixel=1.0, window = None):
     return {"speeds": speeds, "launch": launch_speed}
 
 if __name__ == "__main__":
-    from tracking import clean
-    from kick import kick
+    from src.tracking import clean
+    from src.kick import kick
 
     model = YOLO("yolov8n.pt")
     point1, point2, distance_m = (100, 400), (700, 400), 7.32

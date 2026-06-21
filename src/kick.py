@@ -37,8 +37,8 @@ def kick(smooth, fps, k = 3, window = 5, floor = 200):
         
 if __name__ == "__main__":
     from ultralytics import YOLO
-    from pipeline import run_detection
-    from tracking import clean
+    from src.pipeline import run_detection
+    from src.tracking import clean
 
     model = YOLO("yolov8n.pt")
     frames, fps = run_detection("data/input/velocity_test.mp4", "data/output/output_test.mp4", model, 0.25)

@@ -1,4 +1,4 @@
-from detection import detect_ball
+from src.detection import detect_ball
 from ultralytics import YOLO
 import cv2
 

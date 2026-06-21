@@ -5,7 +5,7 @@ import numpy as np
 from ultralytics import YOLO
 from filterpy.kalman import KalmanFilter
 from filterpy.common import Q_discrete_white_noise
-from pipeline import run_detection
+from src.pipeline import run_detection
 
 
 def clean(frames, fps):
