@@ -42,7 +42,7 @@ class AnalyzeRequest(BaseModel):
 
 # FastAPI Endpoints
 
-@app.post("/upload", response_model=UploadResponse) # Filter data through UploadResponse
+@app.post("/upload") # Filter data through UploadResponse
 async def upload_video(file: UploadFile = File(...)):
     # Store an uploaded video and return dimensions
     if file.content_type is None or not file.content_type.startswith("video/"):
@@ -63,5 +63,15 @@ async def upload_video(file: UploadFile = File(...)):
     VIDEOS[video_id] = path
     return {"video_id": video_id, "width": width, "height": height}
 
-
-
+@app.get("/frame/{video_id}")
+async def frame(video_id: str):
+    path = VIDEOS.get(video_id)
+    if not path:
+        raise HTTPException(404, "Unknown Video ID")
+    cap = cv2.VideoCapture(path)
+    ok, img = cap.read()
+    cap.release()
+    frame_path = os.path.join(STORAGE, f"{video_id}_frame.jpg")
+    cv2.imwrite(frame_path, img)
+    return FileResponse(frame_path, media_type="image/jpeg")
+)
