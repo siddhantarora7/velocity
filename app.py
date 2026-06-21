@@ -52,4 +52,16 @@ async def upload_video(file: UploadFile = File(...)):
     ext = os.path.splitext(file.filename or "")[1] or ".mp4"
     path = os.path.join(STORAGE, f"{video_id}{ext}") # Like tmp/velocity_storage/....mp4
 
+    with open(path, "wb") as f:
+        f.write(await file.read())
+    
+    cap = cv2.VideoCapture(path)
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    cap.release()
+
+    VIDEOS[video_id] = path
+    return {"video_id": video_id, "width": width, "height": height}
+
+
 
