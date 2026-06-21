@@ -112,9 +112,16 @@ async def analyze(req: AnalyzeRequest, bg: BackgroundTasks):
 @app.get("/status/{job_id}")
 async def status(job_id: str):
     job = JOBS.get(job_id)
+    if not job:
+        raise HTTPException(404, "Unknown Job ID")
+    return {"status": job["status"], "error": job.get("error")} # Return to frontend poll
+
+@app.get("/result/{job_id}")
+async def result(job_id: str):
+    job = JOBS.get(job_id)
     if not job or job["status"] != "done":
-        raise HTTPException(409, "Not done")
-    return job["result"] # Done
+        raise HTTPException(409, "Not Done")
+    return job["result"]
 
 # Return output video
 @app.get("/video/{job_id}")
