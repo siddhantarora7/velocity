@@ -31,22 +31,8 @@ os.makedirs(STORAGE, exist_ok = True)
 
 # In-memory Stores
 
-VIDEOS: dict[str, str] = {}
-JOBS: dict[str, dict] = {}
-
-class JobStatus(str, Enum):
-    PENDING, RUNNING, DONE, ERROR = "pending", "running", "done", "error"
-
-class UploadResponse(BaseModel):
-    video_id: str
-    width: int
-    height: int
-    fps: float
-    frame_count: int
-
-class Point(BaseModel):
-    x: float
-    y: float
+VIDEOS = {}
+JOBS = {}
 
 class AnalyzeRequest(BaseModel):
     video_id: str
@@ -54,21 +40,16 @@ class AnalyzeRequest(BaseModel):
     point2: Point
     distance_m: float
 
-class AnalyzeResponse(BaseModel):
-    job_id: str
+# FastAPI Endpoints
 
-class StatusResponse(BaseModel):
-    status: JobStatus
-    error: Optional[str] = None
+@app.post("/upload", response_model=UploadResponse) # Filter data through UploadResponse
+async def upload_video(file: UploadFile = File(...)):
+    # Store an uploaded video and return dimensions
+    if file.content_type is None or not file.content_type.startswith("video/"):
+        raise HTTPException(status_code = 400, detail = "Please upload a video file!")
+    
+    video_id = str(uuid.uuid4())
+    ext = os.path.splitext(file.filename or "")[1] or ".mp4"
+    path = os.path.join(STORAGE, f"{video_id}{ext}") # Like tmp/velocity_storage/....mp4
 
-class SpeedSample(BaseModel):
-    t: float # sec
-    kmh: float
-
-class ResultResponse(BaseModel):
-    fastest_kmh: float
-    fastest_t: float
-    launch_kmh: Optional[float]
-    kick_found: bool
-    speeds: list[SpeedSample]
 
