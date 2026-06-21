@@ -10,7 +10,7 @@ import cv2
 from enum import Enum
 from ultralytics import YOLO
 
-from fastapi import FastAPI
+from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -36,8 +36,8 @@ JOBS = {}
 
 class AnalyzeRequest(BaseModel):
     video_id: str
-    point1: Point
-    point2: Point
+    point1: list[float] # (x, y)
+    point2: list[float]
     distance_m: float
 
 # FastAPI Endpoints
