@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     # debug
     raw_idx, raw_x, raw_y = [x[0] for x in frames if x[1] is not None], [x[1] for x in frames if x[1] is not None], [x[2] for x in frames if x[2] is not None]
-    smooth_idx, smooth_x, smooth_y = [x[0] for x in frames if x[1] is not None], [x[1] for x in frames if x[1] is not None], [x[2] for x in frames if x[2] is not None]
+    smooth_idx, smooth_x, smooth_y = [x[0] for x in smooth if x[1] is not None], [x[1] for x in smooth if x[1] is not None], [x[2] for x in frames if x[2] is not None]
     fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 8), sharex = True)
     ax1.scatter(raw_idx, raw_x, s = 18, c = "red", label = "Raw X", zorder = 3)
     ax1.plot(smooth_idx, smooth_x, c = "blue", label = "Smooth X")

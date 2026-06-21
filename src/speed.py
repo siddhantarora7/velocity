@@ -34,12 +34,16 @@ def compute_speeds(frames, fps, meters_per_pixel=1.0, window = None):
     return {"speeds": speeds, "launch": launch_speed}
 
 if __name__ == "__main__":
+    from tracking import clean
+    from kick import kick
+
     model = YOLO("yolov8n.pt")
-    point1 = (100, 400)
-    point2 = (700, 400)
-    distance_m = 7.32
+    point1, point2, distance_m = (100, 400), (700, 400), 7.32
     meters_per_pixel = compute_scale(point1, point2, distance_m)
+
     frames, fps = run_detection("data/input/velocity_test.mp4", "data/output/output_test.mp4", model, 0.25)
-    res = compute_speeds(frames, fps, meters_per_pixel)
+    smooth = clean(frames, fps) # Smooth first
+    window = kick(smooth, fps)
+    res = compute_speeds(frames, fps, meters_per_pixel, window)
     print('Fastest:', max(res["speeds"], key = lambda x: x[1]))
     print('Launch', res["launch"])
