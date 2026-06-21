@@ -71,6 +71,10 @@ async def frame(video_id: str):
     cap = cv2.VideoCapture(path)
     ok, img = cap.read()
     cap.release()
+    
+    if not ok:
+        raise HTTPException(500, "Unable to read frame")
+
     frame_path = os.path.join(STORAGE, f"{video_id}_frame.jpg")
     cv2.imwrite(frame_path, img)
     return FileResponse(frame_path, media_type="image/jpeg")
