@@ -101,7 +101,7 @@ def _run(job_id, path, p1, p2, distance_m):
 
 @app.post("/analyze")
 async def analyze(req: AnalyzeRequest, bg: BackgroundTasks):
-    path = VIDEO.get(req.video_id)
+    path = VIDEOS.get(req.video_id)
     if not path:
         raise HTTPException(404, "Unknown Video ID")
     job_id = str(uuid.uuid4())
