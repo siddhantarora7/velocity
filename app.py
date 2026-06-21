@@ -74,4 +74,27 @@ async def frame(video_id: str):
     frame_path = os.path.join(STORAGE, f"{video_id}_frame.jpg")
     cv2.imwrite(frame_path, img)
     return FileResponse(frame_path, media_type="image/jpeg")
-)
+
+# Main logic which runs the given video on the pipeline
+def _run(job_id, path, p1, p2, distance_m):
+    try:
+        JOBS[job_id]["status"] = "running"
+        mpp = compute_scale(p1, p2, distance_m) # Meters/pixel
+        out = os.path.join(STORAGE, f"{job_id}_output.mp4")
+        frames, fps = run_detection(path, out, MODEL, 0.25)
+        smooth = clean(frames, fps)
+        window = kick(smooth, fps)
+        res = compute_speeds(smooth, fps, mpp, window)
+        fastest_t, fastest_kmh = max(res["speeds"], key = lambda x: x[1])
+        JOBS[job_id].update({
+            "status": "done",
+            "video": out,
+            "result": {
+                "fastest_kmh": fastest_kmh,
+                "launch_kmh": res["launch"],
+                "kick_found": window is not None,
+                "speeds": res["speeds"],
+            },
+        })
+    except Exception:
+        JOBS[job_id].update({"status": "error", "error": traceback.format_exc()})
