@@ -34,3 +34,41 @@ os.makedirs(STORAGE, exist_ok = True)
 VIDEOS: dict[str, str] = {}
 JOBS: dict[str, dict] = {}
 
+class JobStatus(str, Enum):
+    PENDING, RUNNING, DONE, ERROR = "pending", "running", "done", "error"
+
+class UploadResponse(BaseModel):
+    video_id: str
+    width: int
+    height: int
+    fps: float
+    frame_count: int
+
+class Point(BaseModel):
+    x: float
+    y: float
+
+class AnalyzeRequest(BaseModel):
+    video_id: str
+    point1: Point
+    point2: Point
+    distance_m: float
+
+class AnalyzeResponse(BaseModel):
+    job_id: str
+
+class StatusResponse(BaseModel):
+    status: JobStatus
+    error: Optional[str] = None
+
+class SpeedSample(BaseModel):
+    t: float # sec
+    kmh: float
+
+class ResultResponse(BaseModel):
+    fastest_kmh: float
+    fastest_t: float
+    launch_kmh: Optional[float]
+    kick_found: bool
+    speeds: list[SpeedSample]
+
