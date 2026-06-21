@@ -100,11 +100,26 @@ def _run(job_id, path, p1, p2, distance_m):
         JOBS[job_id].update({"status": "error", "error": traceback.format_exc()})
 
 @app.post("/analyze")
-def analyze(req: AnalyzeRequest, bg: BackgroundTasks):
+async def analyze(req: AnalyzeRequest, bg: BackgroundTasks):
     path = VIDEO.get(req.video_id)
     if not path:
         raise HTTPException(404, "Unknown Video ID")
     job_id = str(uuid.uuid4())
     JOBS[job_id] = {"status": "pending"}
     bg.add_task(_run, job_id, path, req.point1, req.point2, req.distance_m)
-    
+    return {"job_id": job_id} # Return job_id so frontend can check for completion
+
+@app.get("/status/{job_id}")
+async def status(job_id: str):
+    job = JOBS.get(job_id)
+    if not job or job["status"] != "done":
+        raise HTTPException(409, "Not done")
+    return job["result"] # Done
+
+# Return output video
+@app.get("/video/{job_id}")
+async def video(job_id: str):
+    job = JOBS.get(job_id)
+    if not job or not job.get("video"):
+        raise HTTPException(404, "No Video")
+    return FileResponse(job["video"], media_type = "video/mp4")
