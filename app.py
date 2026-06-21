@@ -98,3 +98,13 @@ def _run(job_id, path, p1, p2, distance_m):
         })
     except Exception:
         JOBS[job_id].update({"status": "error", "error": traceback.format_exc()})
+
+@app.post("/analyze")
+def analyze(req: AnalyzeRequest, bg: BackgroundTasks):
+    path = VIDEO.get(req.video_id)
+    if not path:
+        raise HTTPException(404, "Unknown Video ID")
+    job_id = str(uuid.uuid4())
+    JOBS[job_id] = {"status": "pending"}
+    bg.add_task(_run, job_id, path, req.point1, req.point2, req.distance_m)
+    
