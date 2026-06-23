@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { animate, motion } from 'framer-motion'
 import type { FlowState } from '../App'
-import MotionButton from '../components/MotionButton'
+import TextureButton from '../components/TextureButton'
 import './screens.css'
 
 export default function ResultsScreen({
@@ -36,7 +36,7 @@ export default function ResultsScreen({
           <div className="hero__stats">
             <Stat
               label="Launch speed"
-              value={launch != null ? `${launch.toFixed(1)}` : '—'}
+              value={launch != null ? `${launch.toFixed(1)}` : 'n/a'}
               unit={launch != null ? 'km/h' : undefined}
               hint={
                 launch != null ? 'speed off the boot' : 'not enough trajectory'
@@ -79,7 +79,7 @@ export default function ResultsScreen({
       </div>
 
       <div className="results__footer">
-        <MotionButton variant="ghost" onClick={onReset}>
+        <TextureButton variant="secondary" onClick={onReset}>
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path
               d="M4 12a8 8 0 1 1 2.3 5.6M4 12V7m0 5h5"
@@ -90,7 +90,7 @@ export default function ResultsScreen({
             />
           </svg>
           Analyze another
-        </MotionButton>
+        </TextureButton>
       </div>
     </section>
   )

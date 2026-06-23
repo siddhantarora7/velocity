@@ -304,61 +304,6 @@
   text-align: center;
   padding: 64px 40px 56px;
 }
-.radar {
-  position: relative;
-  width: 150px;
-  height: 150px;
-  display: grid;
-  place-items: center;
-  margin-bottom: 30px;
-}
-.radar__ring {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1.5px solid var(--blue-400);
-}
-.radar__core {
-  width: 84px;
-  height: 84px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  background: linear-gradient(180deg, var(--blue-500), var(--blue-700));
-  box-shadow: 0 16px 34px -12px rgba(37, 99, 235, 0.7),
-    inset 0 2px 0 rgba(255, 255, 255, 0.4);
-  z-index: 2;
-}
-.radar__orbit {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-}
-.radar__ball {
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  width: 16px;
-  height: 16px;
-  margin-left: -8px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #fff, #93c5fd 70%, #3b82f6);
-  box-shadow: 0 0 14px 2px rgba(96, 165, 250, 0.9);
-}
-.radar__trail {
-  position: absolute;
-  top: -5px;
-  left: 50%;
-  width: 16px;
-  height: 16px;
-  margin-left: -8px;
-  border-radius: 50%;
-  background: rgba(96, 165, 250, 0.4);
-  filter: blur(5px);
-  transform: scale(1.6);
-}
-
 .processing__msg {
   font-size: 21px;
   font-weight: 700;

@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { analyze, frameUrl } from '../api'
 import type { FlowState } from '../App'
-import MotionButton from '../components/MotionButton'
+import TextureButton from '../components/TextureButton'
 import './screens.css'
 
 // Points are stored as FRACTIONS (0..1) of the rendered image. This sidesteps
@@ -23,7 +23,7 @@ export default function CalibrateScreen({
   const dragging = useRef<number | null>(null)
 
   const [points, setPoints] = useState<Frac[]>([])
-  const [distance, setDistance] = useState('7.32')
+  const [distance, setDistance] = useState('')
   const [imgReady, setImgReady] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -89,8 +89,8 @@ export default function CalibrateScreen({
         <p className="eyebrow">Step 2 · Calibrate</p>
         <h1 className="headline">Set the scale</h1>
         <p className="subhead">
-          Click two points a known distance apart — a penalty box, the goal
-          width, anything you can measure. Drag a dot to nudge it.
+          Click two points a known distance apart, like a penalty box or the
+          goal width. Drag a dot to nudge it into place.
         </p>
       </div>
 
@@ -172,6 +172,7 @@ export default function CalibrateScreen({
                 inputMode="decimal"
                 min="0"
                 step="0.01"
+                placeholder="e.g. 7.32"
                 value={distance}
                 onChange={(e) => setDistance(e.target.value)}
                 className="tnum"
@@ -179,7 +180,7 @@ export default function CalibrateScreen({
               <span className="field__unit">meters</span>
             </div>
             <span className="field__help">
-              Default 7.32 m — the width of a regulation goal.
+              For reference, a regulation goal is 7.32 m wide.
             </span>
           </label>
 
@@ -193,7 +194,7 @@ export default function CalibrateScreen({
                 Clear points
               </button>
             )}
-            <MotionButton onClick={measure} disabled={!ready || submitting}>
+            <TextureButton onClick={measure} disabled={!ready || submitting}>
               {submitting ? 'Starting…' : 'Measure speed'}
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                 <path
@@ -204,7 +205,7 @@ export default function CalibrateScreen({
                   strokeLinejoin="round"
                 />
               </svg>
-            </MotionButton>
+            </TextureButton>
           </div>
         </div>
       </div>

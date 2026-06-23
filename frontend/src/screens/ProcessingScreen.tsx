@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { getResult, getStatus, videoUrl, type AnalyzeResult } from '../api'
-import MotionButton from '../components/MotionButton'
+import TextureButton from '../components/TextureButton'
+import AiLoader from '../components/AiLoader'
 import './screens.css'
 
 const MESSAGES = [
@@ -81,7 +82,7 @@ export default function ProcessingScreen({
           <h2 className="headline">Analysis hit a snag</h2>
           <p className="subhead errorcard__detail">{error}</p>
           <div className="errorcard__actions">
-            <MotionButton onClick={onCancel}>Start over</MotionButton>
+            <TextureButton onClick={onCancel}>Start over</TextureButton>
           </div>
         </div>
       </section>
@@ -91,7 +92,7 @@ export default function ProcessingScreen({
   return (
     <section className="screen">
       <div className="glass processing">
-        <Radar />
+        <AiLoader />
         <motion.p
           key={msgIndex}
           className="processing__msg"
@@ -103,54 +104,10 @@ export default function ProcessingScreen({
           {MESSAGES[msgIndex]}
         </motion.p>
         <p className="processing__sub">
-          This usually takes a moment — we’re tracking the ball across the
-          whole clip.
+          This usually takes a moment while we track the ball across the whole
+          clip.
         </p>
       </div>
     </section>
-  )
-}
-
-// A pitch-radar: concentric pulse rings, a sweeping arc, and a ball that
-// orbits leaving a comet trail. Pure SVG + Framer Motion.
-function Radar() {
-  return (
-    <div className="radar" aria-hidden>
-      {[0, 1, 2].map((i) => (
-        <motion.span
-          key={i}
-          className="radar__ring"
-          initial={{ scale: 0.35, opacity: 0.55 }}
-          animate={{ scale: 1.25, opacity: 0 }}
-          transition={{
-            duration: 2.4,
-            repeat: Infinity,
-            ease: 'easeOut',
-            delay: i * 0.8,
-          }}
-        />
-      ))}
-
-      <div className="radar__core">
-        <svg width="44" height="44" viewBox="0 0 24 24" fill="none">
-          <path
-            d="M3 5l7 14a1 1 0 0 0 1.8.05L21 5"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-
-      <motion.div
-        className="radar__orbit"
-        animate={{ rotate: 360 }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}
-      >
-        <span className="radar__ball" />
-        <span className="radar__trail" />
-      </motion.div>
-    </div>
   )
 }
