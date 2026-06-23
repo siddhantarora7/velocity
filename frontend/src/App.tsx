@@ -1,122 +1,92 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useCallback, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import type { AnalyzeResult, UploadResponse } from './api'
+import UploadScreen from './screens/UploadScreen'
+import CalibrateScreen from './screens/CalibrateScreen'
+import ProcessingScreen from './screens/ProcessingScreen'
+import ResultsScreen from './screens/ResultsScreen'
 
-function App() {
-  const [count, setCount] = useState(0)
+type Phase = 'upload' | 'calibrate' | 'processing' | 'results'
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+export interface FlowState {
+  upload: UploadResponse
+  jobId?: string
+  result?: AnalyzeResult
+  videoSrc?: string
 }
 
-export default App
+export default function App() {
+  const [phase, setPhase] = useState<Phase>('upload')
+  const [flow, setFlow] = useState<FlowState | null>(null)
+
+  const reset = useCallback(() => {
+    setFlow(null)
+    setPhase('upload')
+  }, [])
+
+  const onUploaded = useCallback((upload: UploadResponse) => {
+    setFlow({ upload })
+    setPhase('calibrate')
+  }, [])
+
+  const onAnalyzing = useCallback((jobId: string) => {
+    setFlow((f) => (f ? { ...f, jobId } : f))
+    setPhase('processing')
+  }, [])
+
+  const onDone = useCallback(
+    (result: AnalyzeResult, videoSrc: string) => {
+      setFlow((f) => (f ? { ...f, result, videoSrc } : f))
+      setPhase('results')
+    },
+    [],
+  )
+
+  return (
+    <div className="app-shell">
+      <header className="brand">
+        <span className="brand__mark" aria-hidden>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M3 5l7 14a1 1 0 0 0 1.8.05L21 5"
+              stroke="currentColor"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </span>
+        <span className="brand__name">
+          velocity<span>.</span>
+        </span>
+      </header>
+
+      <main className="stage">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={phase}
+            initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -14, filter: 'blur(6px)' }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {phase === 'upload' && <UploadScreen onUploaded={onUploaded} />}
+            {phase === 'calibrate' && flow && (
+              <CalibrateScreen flow={flow} onAnalyzing={onAnalyzing} />
+            )}
+            {phase === 'processing' && flow?.jobId && (
+              <ProcessingScreen
+                jobId={flow.jobId}
+                onDone={onDone}
+                onCancel={reset}
+              />
+            )}
+            {phase === 'results' && flow?.result && (
+              <ResultsScreen flow={flow} onReset={reset} />
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </main>
+    </div>
+  )
+}
