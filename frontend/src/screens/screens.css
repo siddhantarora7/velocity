@@ -161,7 +161,9 @@
   position: absolute;
   width: 26px;
   height: 26px;
-  transform: translate(-50%, -50%);
+  /* Center via negative margins, not transform — Framer Motion animates the
+     dot's `scale` through `transform`, which would clobber a translate here. */
+  margin: -13px 0 0 -13px;
   border-radius: 50%;
   border: 2.5px solid #fff;
   background: radial-gradient(circle at 35% 30%, #60a5fa, #2563eb);
@@ -381,6 +383,7 @@
   margin: 4px 0 2px;
 }
 .hero__number {
+  font-family: var(--font-display);
   font-size: 116px;
   font-weight: 800;
   line-height: 1;

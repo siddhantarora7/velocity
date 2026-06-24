@@ -175,31 +175,46 @@ function Sparkline({ speeds }: { speeds: [number, number][] }) {
             <stop offset="0" stopColor="#3b82f6" stopOpacity="0.28" />
             <stop offset="1" stopColor="#3b82f6" stopOpacity="0" />
           </linearGradient>
+          <clipPath id="sparkReveal">
+            {/* A left-to-right wipe. Animating a clip width avoids the
+                pathLength/dash math, which renders wrong under a distorted
+                (preserveAspectRatio="none") viewBox. */}
+            <motion.rect
+              x="0"
+              y="0"
+              height="30"
+              initial={{ width: 0 }}
+              animate={{ width: 100 }}
+              transition={{ duration: 1.3, ease: 'easeInOut', delay: 0.3 }}
+            />
+          </clipPath>
         </defs>
-        <path d={geom.area} fill="url(#sparkFill)" />
-        <motion.path
-          d={geom.line}
-          fill="none"
-          stroke="#2563eb"
-          strokeWidth="1.4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          vectorEffect="non-scaling-stroke"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ duration: 1.4, ease: 'easeInOut', delay: 0.3 }}
-        />
+        <g clipPath="url(#sparkReveal)">
+          {/* The line traces the exact top edge of the fill, so it always
+              covers it — area and stroke share the same point path. */}
+          <path d={geom.area} fill="url(#sparkFill)" />
+          <path
+            d={geom.line}
+            fill="none"
+            stroke="#2563eb"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        </g>
         <motion.circle
           cx={geom.peak[0]}
           cy={geom.peak[1]}
-          r="2.2"
+          r="2.4"
           fill="#2563eb"
           stroke="#fff"
-          strokeWidth="1"
+          strokeWidth="1.2"
           vectorEffect="non-scaling-stroke"
+          style={{ transformBox: 'fill-box', transformOrigin: 'center' }}
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ delay: 1.6, type: 'spring', stiffness: 400 }}
+          transition={{ delay: 1.5, type: 'spring', stiffness: 400 }}
         />
       </svg>
       <span className="spark__axis">speed over time</span>

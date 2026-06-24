@@ -119,13 +119,12 @@ export default function CalibrateScreen({
                 x2={points[1].x * 100}
                 y2={points[1].y * 100}
                 stroke="url(#calLine)"
-                strokeWidth="0.5"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 vectorEffect="non-scaling-stroke"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-                style={{ strokeWidth: 2 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
               />
             )}
             <defs>
