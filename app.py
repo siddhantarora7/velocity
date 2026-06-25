@@ -160,7 +160,7 @@ async def video(job_id: str):
         raise HTTPException(404, "No Video")
     return FileResponse(job["video"], media_type = "video/mp4")
 
-@app.get("/signup")
+@app.post("/signup")
 async def signup(req: SignupRequest, db: Session = Depends(get_db)):
     if db.query(User).filter(User.email == req.email).first():
         raise HTTPException(400, "Duplicate email")
@@ -168,4 +168,13 @@ async def signup(req: SignupRequest, db: Session = Depends(get_db)):
     db.add(user)
     db.commit()
     db.refresh(user)
+    return {"token": create_token(user.id)}
+
+@app.post("/login")
+async def login(req: SignupRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == req.email).first()
+    if not user:
+        raise HTTPException(401, "User not found")
+    if not verify_password(req.password, user.password_hash):
+        raise HTTPException(401, "Incorrect password")
     return {"token": create_token(user.id)}
