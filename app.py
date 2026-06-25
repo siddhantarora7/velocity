@@ -159,3 +159,13 @@ async def video(job_id: str):
     if not job or not job.get("video"):
         raise HTTPException(404, "No Video")
     return FileResponse(job["video"], media_type = "video/mp4")
+
+@app.get("/signup")
+async def signup(req: SignupRequest, db: Session = Depends(get_db)):
+    if db.query(User).filter(User.email == req.email).first():
+        raise HTTPException(400, "Duplicate email")
+    user = User(email=req.email, password_hash = hash_password(req.password))
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"token": create_token(user.id)}
