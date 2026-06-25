@@ -37,11 +37,33 @@ os.makedirs(STORAGE, exist_ok = True)
 VIDEOS = {}
 JOBS = {}
 
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
 class AnalyzeRequest(BaseModel):
     video_id: str
     point1: list[float] # (x, y)
     point2: list[float]
     distance_m: float
+
+def current_user(authorization: str = Header(None), db: Session = Depends(get_db)) -> User:
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(401, "Not authenticated!")
+    
+    token = authorization.split(" ", 1)[1]
+    user_id = decode_token(token)
+    if user_id is None:
+        raise HTTPException(401, "Invalid token")
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise HTTPException(401, "User not found")
+    return user
+
 
 # FastAPI Endpoints
 
