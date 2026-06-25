@@ -26,3 +26,13 @@ class Shot(Base):
     kick_found = Column(Boolean, default = False)
     created_at = Column(DateTime, default=dattetime.utcnow)
     user = relationship("User", back_populates="shots")
+
+Base.metadate.create_all(engine)
+
+def get_db():
+    # For FastAPI
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
