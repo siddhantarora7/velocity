@@ -178,3 +178,16 @@ async def login(req: SignupRequest, db: Session = Depends(get_db)):
     if not verify_password(req.password, user.password_hash):
         raise HTTPException(401, "Incorrect password")
     return {"token": create_token(user.id)}
+
+@app.get("/shots")
+async def list_shots(user: User = Depends(current_user), db: Session = Depends(get_db)):
+    shots = db.query(Shot).filter(Shot.user_id == user.id).order_by(Shot.created_at.desc()).all()
+    return [{
+        "id": s.id,
+        "fastest_kmh": s.fastest_kmh,
+        "launch_kmg": s.launch_kmh,
+        "kick_found", s.kick_found,
+        "created_at": s.created_at.isoformat(),
+    }
+    for s in shots
+    ]
