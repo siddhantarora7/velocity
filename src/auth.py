@@ -29,4 +29,3 @@ def decode_token(token: str) -> int | None:
         return int(payload["sub"])
     except Error:
         return None
-

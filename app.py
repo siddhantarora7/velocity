@@ -10,10 +10,13 @@ import cv2
 from enum import Enum
 from ultralytics import YOLO
 
-from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks
+from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from db import get_db, User, Shot
+from auth import hash_password, verify_password, create_token, decode_token
 
 from src.pipeline import run_detection
 from src.tracking import clean
