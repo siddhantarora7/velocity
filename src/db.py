@@ -16,3 +16,13 @@ class User(Base):
     created_at = Column(DateTime, default=datetime.utconow)
     shots = relationship("Shot", back_populates="user")
 
+class Shot(Base):
+    # Table to store shot data
+    __table__name = "shots"
+    id = Column(Integer, primary_key = True)
+    user_id = Column(Integer, ForeignKey("user.id"), nullable = False)
+    fastest_kmh = Column(Float, nullable = False)
+    launch_kmh = Column(Float, nullable = True)
+    kick_found = Column(Boolean, default = False)
+    created_at = Column(DateTime, default=dattetime.utcnow)
+    user = relationship("User", back_populates="shots")
