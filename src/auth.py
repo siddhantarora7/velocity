@@ -1,0 +1,13 @@
+import os
+from dotenv import load_dotenv
+from datetime import datetime, timedelta
+from passlib.context import CryptContext
+from dott
+from jose, jwt, JWTError
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALG = "HS256"
+EXPIRE_MIN = 60*24*7 # 1 week
