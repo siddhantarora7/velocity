@@ -7,7 +7,6 @@ import uuid
 import traceback
 import tempfile
 import cv2
-from enum import Enum
 from ultralytics import YOLO
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, BackgroundTasks, Depends, Header
@@ -15,7 +14,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from db import get_db, User, Shot
+from db import get_db, User, Shot, SessionLocal
 from auth import hash_password, verify_password, create_token, decode_token
 
 from src.pipeline import run_detection
@@ -105,7 +104,7 @@ async def frame(video_id: str):
     return FileResponse(frame_path, media_type="image/jpeg")
 
 # Main logic which runs the given video on the pipeline
-def _run(job_id, path, p1, p2, distance_m):
+def _run(job_id, path, p1, p2, distance_m, user_id = None):
     try:
         JOBS[job_id]["status"] = "running"
         mpp = compute_scale(p1, p2, distance_m) # Meters/pixel
@@ -115,6 +114,17 @@ def _run(job_id, path, p1, p2, distance_m):
         window = kick(smooth, fps)
         res = compute_speeds(smooth, fps, mpp, window)
         fastest_t, fastest_kmh = max(res["speeds"], key = lambda x: x[1])
+
+        if user_id is not None:
+            db = SessionLocal()
+            try:
+                shot = Shot(user_id = user_id, fastest_kmh = fastest_kmh, launch_kmh= res["launch"], 
+                kick_found = window is not None,)
+                db.add(shot)
+                db.commit()
+            finally:
+                db.close()
+
         JOBS[job_id].update({
             "status": "done",
             "video": out,
@@ -129,13 +139,14 @@ def _run(job_id, path, p1, p2, distance_m):
         JOBS[job_id].update({"status": "error", "error": traceback.format_exc()})
 
 @app.post("/analyze")
-async def analyze(req: AnalyzeRequest, bg: BackgroundTasks):
+async def analyze(req: AnalyzeRequest, bg: BackgroundTasks, user=Depends(current_user)):
     path = VIDEOS.get(req.video_id)
     if not path:
         raise HTTPException(404, "Unknown Video ID")
     job_id = str(uuid.uuid4())
     JOBS[job_id] = {"status": "pending"}
-    bg.add_task(_run, job_id, path, req.point1, req.point2, req.distance_m)
+    user_id = user.id if user else None
+    bg.add_task(_run, job_id, path, req.point1, req.point2, req.distance_m, user_id)
     return {"job_id": job_id} # Return job_id so frontend can check for completion
 
 @app.get("/status/{job_id}")
@@ -171,7 +182,7 @@ async def signup(req: SignupRequest, db: Session = Depends(get_db)):
     return {"token": create_token(user.id)}
 
 @app.post("/login")
-async def login(req: SignupRequest, db: Session = Depends(get_db)):
+async def login(req: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == req.email).first()
     if not user:
         raise HTTPException(401, "User not found")
@@ -185,8 +196,8 @@ async def list_shots(user: User = Depends(current_user), db: Session = Depends(g
     return [{
         "id": s.id,
         "fastest_kmh": s.fastest_kmh,
-        "launch_kmg": s.launch_kmh,
-        "kick_found", s.kick_found,
+        "launch_kmh": s.launch_kmh,
+        "kick_found": s.kick_found,
         "created_at": s.created_at.isoformat(),
     }
     for s in shots
