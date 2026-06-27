@@ -63,6 +63,17 @@ def current_user(authorization: str = Header(None), db: Session = Depends(get_db
         raise HTTPException(401, "User not found")
     return user
 
+# If user is not logged in, we can still store their shots
+def current_user_2(authorization: str = Header(none), db: Session = Depends(get_db)):
+    if not authorization or not authorization.startswith("Bearer "):
+        raise HTTPException(401, "Not authenticated!")
+    
+    token = authorization.split(" ", 1)[1]
+    user_id = decode_token(token)
+    if user_is is None:
+        return None
+    return db.query(User).filter(User.id == user_id).first()
+
 
 # FastAPI Endpoints
 
@@ -139,7 +150,7 @@ def _run(job_id, path, p1, p2, distance_m, user_id = None):
         JOBS[job_id].update({"status": "error", "error": traceback.format_exc()})
 
 @app.post("/analyze")
-async def analyze(req: AnalyzeRequest, bg: BackgroundTasks, user=Depends(current_user)):
+async def analyze(req: AnalyzeRequest, bg: BackgroundTasks, user=Depends(current_user_2)):
     path = VIDEOS.get(req.video_id)
     if not path:
         raise HTTPException(404, "Unknown Video ID")
