@@ -14,9 +14,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from db import get_db, User, Shot, SessionLocal
-from auth import hash_password, verify_password, create_token, decode_token
 
+from src.db import get_db, User, Shot, SessionLocal
+from src.auth import hash_password, verify_password, create_token, decode_token
 from src.pipeline import run_detection
 from src.tracking import clean
 from src.kick import kick
