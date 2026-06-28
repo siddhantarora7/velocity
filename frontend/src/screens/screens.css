@@ -307,11 +307,11 @@
   padding: 64px 40px 56px;
 }
 .processing__msg {
-  font-size: 21px;
-  font-weight: 700;
+  font-size: 24px;
+  font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--ink-900);
-  margin: 0 0 8px;
+  margin: 18px 0 10px;
+  min-height: 1.3em;
 }
 .processing__sub {
   font-size: 14px;
@@ -387,13 +387,9 @@
   font-size: 116px;
   font-weight: 800;
   line-height: 1;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.04em;
   color: var(--blue-600);
-  background: linear-gradient(180deg, #3b82f6, #1d4ed8);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 12px 30px rgba(37, 99, 235, 0.18);
+  text-shadow: 0 14px 34px rgba(37, 99, 235, 0.2);
 }
 .hero__unit {
   font-size: 26px;
@@ -532,6 +528,11 @@
 }
 .histstat {
   padding: 22px 24px;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.histstat:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card), inset 0 0 0 1px rgba(96, 165, 250, 0.45);
 }
 .histstat__label {
   margin: 0 0 8px;
@@ -569,6 +570,10 @@
   align-items: center;
   gap: 18px;
   padding: 16px 22px;
+  transition: box-shadow 0.3s ease;
+}
+.shot:hover {
+  box-shadow: var(--shadow-card), inset 0 0 0 1px rgba(96, 165, 250, 0.5);
 }
 .shot__speed {
   display: flex;
@@ -639,4 +644,18 @@
   .shot__speed {
     min-width: 0;
   }
+}
+
+/* Numeric / instrument metadata renders in Geist Mono. */
+.hero__caption,
+.hero__unit,
+.stat__label,
+.stat__unit,
+.histstat__label,
+.histstat__unit,
+.shot__unit,
+.shot__time,
+.spark__axis,
+.field__unit {
+  font-family: var(--font-mono);
 }

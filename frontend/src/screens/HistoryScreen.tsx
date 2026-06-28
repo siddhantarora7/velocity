@@ -108,6 +108,7 @@ function ShotRow({ shot, index }: { shot: Shot; index: number }) {
       className="glass shot"
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -3 }}
       transition={{ duration: 0.35, delay: Math.min(index * 0.04, 0.3), ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="shot__speed tnum">

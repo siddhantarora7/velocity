@@ -69,18 +69,24 @@ export default function App() {
         </div>
 
         <nav className="nav">
-          <button
-            className={`nav__tab ${tab === 'analyze' ? 'nav__tab--active' : ''}`}
-            onClick={() => setTab('analyze')}
-          >
-            Analyze
-          </button>
-          <button
-            className={`nav__tab ${tab === 'history' ? 'nav__tab--active' : ''}`}
-            onClick={() => setTab('history')}
-          >
-            History
-          </button>
+          {(['analyze', 'history'] as Tab[]).map((t) => (
+            <button
+              key={t}
+              className={`nav__tab ${tab === t ? 'nav__tab--active' : ''}`}
+              onClick={() => setTab(t)}
+            >
+              {tab === t && (
+                <motion.span
+                  layoutId="navpill"
+                  className="nav__pill"
+                  transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                />
+              )}
+              <span className="nav__tab-label">
+                {t === 'analyze' ? 'Analyze' : 'History'}
+              </span>
+            </button>
+          ))}
           {isAuthed ? (
             <div className="authctl">
               <span className="authctl__email">{email}</span>

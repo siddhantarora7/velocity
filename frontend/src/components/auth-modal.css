@@ -26,6 +26,21 @@
   gap: 16px;
 }
 
+/* The shared .field is built for the calibrate number field (fixed 92px next to
+   a unit chip); auth inputs need to fill the row instead. */
+.modal__form .field__input {
+  display: flex;
+  padding: 4px 14px;
+}
+.modal__form .field__input input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 9px 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
 .modal__submit {
   width: 100%;
   margin-top: 4px;

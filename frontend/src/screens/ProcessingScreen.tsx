@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { getResult, getStatus, videoUrl, type AnalyzeResult } from '../api'
 import TextureButton from '../components/TextureButton'
 import AiLoader from '../components/AiLoader'
+import Shimmer from '../components/Shimmer'
 import './screens.css'
 
 const MESSAGES = [
@@ -93,16 +94,13 @@ export default function ProcessingScreen({
     <section className="screen">
       <div className="glass processing">
         <AiLoader />
-        <motion.p
-          key={msgIndex}
-          className="processing__msg"
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          {MESSAGES[msgIndex]}
-        </motion.p>
+        <div className="processing__msg">
+          <AnimatePresence mode="wait">
+            <Shimmer key={msgIndex} duration={2.4}>
+              {MESSAGES[msgIndex]}
+            </Shimmer>
+          </AnimatePresence>
+        </div>
         <p className="processing__sub">
           This usually takes a moment while we track the ball across the whole
           clip.
