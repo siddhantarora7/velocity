@@ -110,12 +110,83 @@ body::after {
   padding: 0 24px 80px;
 }
 
+.topbar {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .brand {
   display: flex;
   align-items: center;
   gap: 11px;
   padding: 34px 0 6px;
   user-select: none;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.nav__tab {
+  appearance: none;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-500);
+  padding: 8px 14px;
+  border-radius: 999px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.nav__tab:hover {
+  color: var(--ink-900);
+}
+.nav__tab--active {
+  color: var(--blue-700);
+  background: var(--glass-strong);
+  box-shadow: inset 0 0 0 1px var(--glass-edge);
+}
+.nav__login {
+  appearance: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue-700);
+  background: var(--glass-strong);
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  margin-left: 6px;
+  box-shadow: inset 0 0 0 1px var(--glass-edge);
+  transition: background 0.2s ease;
+}
+.nav__login:hover {
+  background: #fff;
+}
+.authctl {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 6px;
+}
+.authctl__email {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-500);
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .brand__mark {

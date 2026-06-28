@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-from dott
-from jose, jwt, JWTError
+from jose import jwt, JWTError
+from typing import Optional
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated = "auto")
 load_dotenv()
@@ -19,13 +19,13 @@ def verify_password(raw: str, hashed: str) -> bool:
     return pwd_context.verify(raw, hashed)
 
 def create_token(user_id: int) -> str:
-    expire = datetime.now() + timedelta(minutes = EXPIRE_MIN)
+    expire = datetime.utcnow() + timedelta(minutes = EXPIRE_MIN)
     data = {"sub": str(user_id), "exp": expire}
-    return jwt.encode(payload, SECRET_KEY, algorithm = ALG)
+    return jwt.encode(data, SECRET_KEY, algorithm = ALG)
 
-def decode_token(token: str) -> int | None:
+def decode_token(token: str) -> Optional[int]:
     try:
         data = jwt.decode(token, SECRET_KEY, algorithms = [ALG])
-        return int(payload["sub"])
-    except Error:
+        return int(data["sub"])
+    except (JWTError, KeyError, ValueError):
         return None

@@ -13,21 +13,21 @@ class User(Base):
     id = Column(Integer, primary_key = True)
     email = Column(String, unique = True, index = True, nullable = False)
     password_hash = Column(String, nullable = False)
-    created_at = Column(DateTime, default=datetime.utconow)
+    created_at = Column(DateTime, default=datetime.utcnow)
     shots = relationship("Shot", back_populates="user")
 
 class Shot(Base):
     # Table to store shot data
-    __table__name = "shots"
+    __tablename__ = "shots"
     id = Column(Integer, primary_key = True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable = False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable = False)
     fastest_kmh = Column(Float, nullable = False)
     launch_kmh = Column(Float, nullable = True)
     kick_found = Column(Boolean, default = False)
-    created_at = Column(DateTime, default=dattetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
     user = relationship("User", back_populates="shots")
 
-Base.metadate.create_all(engine)
+Base.metadata.create_all(engine)
 
 def get_db():
     # For FastAPI

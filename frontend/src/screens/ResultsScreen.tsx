@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react'
-import { animate, motion } from 'framer-motion'
+import { useMemo } from 'react'
+import { motion } from 'framer-motion'
 import type { FlowState } from '../App'
 import TextureButton from '../components/TextureButton'
+import CountUp from '../components/CountUp'
 import './screens.css'
 
 export default function ResultsScreen({
@@ -117,27 +118,6 @@ function Stat({
       {hint && <p className="stat__hint">{hint}</p>}
     </div>
   )
-}
-
-function CountUp({
-  value,
-  decimals = 0,
-  className,
-}: {
-  value: number
-  decimals?: number
-  className?: string
-}) {
-  const [display, setDisplay] = useState(0)
-  useEffect(() => {
-    const controls = animate(0, value, {
-      duration: 1.7,
-      ease: [0.16, 1, 0.3, 1],
-      onUpdate: (v) => setDisplay(v),
-    })
-    return () => controls.stop()
-  }, [value])
-  return <span className={className}>{display.toFixed(decimals)}</span>
 }
 
 // Speed-over-time sparkline with a soft area fill and a marker on the peak.

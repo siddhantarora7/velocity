@@ -50,29 +50,28 @@ class AnalyzeRequest(BaseModel):
     point2: list[float]
     distance_m: float
 
-def current_user(authorization: str = Header(None), db: Session = Depends(get_db)) -> User:
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(401, "Not authenticated!")
-    
-    token = authorization.split(" ", 1)[1]
-    user_id = decode_token(token)
+# Parse a "Bearer <token>" header tolerantly (case-insensitive scheme, extra
+# whitespace ok) and return the matching User, or None if anything is off.
+def _user_from_auth(authorization, db: Session):
+    if not authorization:
+        return None
+    parts = authorization.strip().split()
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        return None
+    user_id = decode_token(parts[1])
     if user_id is None:
-        raise HTTPException(401, "Invalid token")
-    user = db.query(User).filter(User.id == user_id).first()
+        return None
+    return db.query(User).filter(User.id == user_id).first()
+
+def current_user(authorization: str = Header(None), db: Session = Depends(get_db)) -> User:
+    user = _user_from_auth(authorization, db)
     if user is None:
-        raise HTTPException(401, "User not found")
+        raise HTTPException(401, "Not authenticated!")
     return user
 
 # If user is not logged in, we can still store their shots
-def current_user_2(authorization: str = Header(none), db: Session = Depends(get_db)):
-    if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(401, "Not authenticated!")
-    
-    token = authorization.split(" ", 1)[1]
-    user_id = decode_token(token)
-    if user_is is None:
-        return None
-    return db.query(User).filter(User.id == user_id).first()
+def current_user_2(authorization: str = Header(None), db: Session = Depends(get_db)):
+    return _user_from_auth(authorization, db)
 
 
 # FastAPI Endpoints

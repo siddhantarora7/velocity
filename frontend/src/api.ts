@@ -1,9 +1,26 @@
 // Thin client for the Velocity FastAPI backend.
-// Contract mirrors app.py exactly — note the analyze body uses `distance_m`
-// (NOT `di_m`), which is the single most important detail to get right
-// alongside the displayed→true pixel conversion done by the caller.
+// Contract mirrors app.py exactly, the analyze body uses `distance_m`
 
 export const API_BASE = 'http://localhost:8000'
+
+// JWT lives module-level so every request (analyze, shots) can attach it.
+// The AuthProvider is the single writer via setAuthToken.
+const TOKEN_KEY = 'velocity_token'
+let authToken: string | null = localStorage.getItem(TOKEN_KEY)
+
+export function setAuthToken(token: string | null) {
+  authToken = token
+  if (token) localStorage.setItem(TOKEN_KEY, token)
+  else localStorage.removeItem(TOKEN_KEY)
+}
+
+export function getAuthToken(): string | null {
+  return authToken
+}
+
+function authHeader(): Record<string, string> {
+  return authToken ? { Authorization: `Bearer ${authToken}` } : {}
+}
 
 export interface UploadResponse {
   video_id: string
@@ -23,6 +40,14 @@ export interface AnalyzeResult {
   launch_kmh: number | null
   kick_found: boolean
   speeds: [number, number][] // [timeSeconds, kmh]
+}
+
+export interface Shot {
+  id: number
+  fastest_kmh: number
+  launch_kmh: number | null
+  kick_found: boolean
+  created_at: string // naive UTC isoformat from the backend
 }
 
 export type Point = [number, number]
@@ -60,7 +85,7 @@ export async function analyze(params: {
 }): Promise<{ job_id: string }> {
   const res = await fetch(`${API_BASE}/analyze`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...authHeader() },
     body: JSON.stringify({
       video_id: params.videoId,
       point1: params.point1,
@@ -81,4 +106,26 @@ export async function getResult(jobId: string): Promise<AnalyzeResult> {
 
 export function videoUrl(jobId: string): string {
   return `${API_BASE}/video/${jobId}`
+}
+
+export async function signup(email: string, password: string): Promise<{ token: string }> {
+  const res = await fetch(`${API_BASE}/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
+  return asJson<{ token: string }>(res)
+}
+
+export async function login(email: string, password: string): Promise<{ token: string }> {
+  const res = await fetch(`${API_BASE}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password }),
+  })
+  return asJson<{ token: string }>(res)
+}
+
+export async function listShots(): Promise<Shot[]> {
+  return asJson<Shot[]>(await fetch(`${API_BASE}/shots`, { headers: authHeader() }))
 }
