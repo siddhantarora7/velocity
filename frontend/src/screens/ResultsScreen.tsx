@@ -29,18 +29,34 @@ export default function ResultsScreen({
         <div className="glass hero">
           <p className="hero__caption">Top speed</p>
           <div className="hero__readout">
-            <CountUp value={fastest} decimals={1} className="hero__number tnum" />
-            <span className="hero__unit">km/h</span>
+            {result.kick_found ? (
+              <>
+                <CountUp value={fastest} decimals={1} className="hero__number tnum" />
+                <span className="hero__unit">km/h</span>
+              </>
+            ) : (
+              <span className="hero__number">N.A.</span>
+            )}
           </div>
           <Sparkline speeds={result.speeds} />
 
           <div className="hero__stats">
             <Stat
               label="Launch speed"
-              value={launch != null ? `${launch.toFixed(1)}` : 'n/a'}
-              unit={launch != null ? 'km/h' : undefined}
+              value={
+                result.kick_found && launch != null
+                  ? `${launch.toFixed(1)}`
+                  : 'N.A.'
+              }
+              unit={
+                result.kick_found && launch != null ? 'km/h' : undefined
+              }
               hint={
-                launch != null ? 'speed off the boot' : 'not enough trajectory'
+                !result.kick_found
+                  ? 'kick not detected'
+                  : launch != null
+                    ? 'speed off the boot'
+                    : 'not enough trajectory'
               }
             />
             <Stat
@@ -54,8 +70,8 @@ export default function ResultsScreen({
             />
             <Stat
               label="Top speed in mph"
-              value={(fastest / 1.609).toFixed(1)}
-              unit="mph"
+              value={result.kick_found ? (fastest / 1.609).toFixed(1) : 'N.A.'}
+              unit={result.kick_found ? 'mph' : undefined}
               hint="for the imperial crowd"
             />
           </div>
