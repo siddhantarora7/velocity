@@ -25,5 +25,6 @@ RUN python -c "from ultralytics import YOLO; YOLO('yolov8n.pt')"
 COPY app.py ./
 COPY src ./src
 
-EXPOSE 8000
-CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# HF Spaces routes to 7860; Render injects its own $PORT which overrides this.
+EXPOSE 7860
+CMD ["sh", "-c", "uvicorn app:app --host 0.0.0.0 --port ${PORT:-7860}"]
