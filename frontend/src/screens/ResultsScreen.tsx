@@ -60,23 +60,6 @@ export default function ResultsScreen({
             />
           </div>
         </div>
-
-        <div className="glass videocard">
-          <div className="videocard__bar">
-            <span className="videocard__tag">
-              <span className="rec-dot" /> Annotated tracking
-            </span>
-          </div>
-          <video
-            className="videocard__video"
-            src={flow.videoSrc}
-            controls
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
-        </div>
       </div>
 
       <div className="results__footer">

@@ -461,49 +461,6 @@
   color: var(--ink-400);
 }
 
-.videocard {
-  padding: 12px;
-  overflow: hidden;
-}
-.videocard__bar {
-  display: flex;
-  align-items: center;
-  padding: 4px 6px 12px;
-}
-.videocard__tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink-500);
-}
-.rec-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #ef4444;
-  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
-  animation: pulse-red 1.6s infinite;
-}
-@keyframes pulse-red {
-  0% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
-  }
-  70% {
-    box-shadow: 0 0 0 7px rgba(239, 68, 68, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
-  }
-}
-.videocard__video {
-  display: block;
-  width: 100%;
-  border-radius: 14px;
-  background: #0b1f3a;
-}
-
 .results__footer {
   display: flex;
   justify-content: center;

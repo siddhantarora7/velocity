@@ -121,8 +121,7 @@ def _run(job_id, path, p1, p2, distance_m, user_id = None):
     try:
         JOBS[job_id]["status"] = "running"
         mpp = compute_scale(p1, p2, distance_m) # Meters/pixel
-        out = os.path.join(STORAGE, f"{job_id}_output.mp4")
-        frames, fps = run_detection(path, out, MODEL, 0.25)
+        frames, fps = run_detection(path, MODEL, 0.25)
         smooth = clean(frames, fps)
         window = kick(smooth, fps)
         res = compute_speeds(smooth, fps, mpp, window)
@@ -140,7 +139,6 @@ def _run(job_id, path, p1, p2, distance_m, user_id = None):
 
         JOBS[job_id].update({
             "status": "done",
-            "video": out,
             "result": {
                 "fastest_kmh": fastest_kmh,
                 "launch_kmh": res["launch"],
@@ -175,14 +173,6 @@ async def result(job_id: str):
     if not job or job["status"] != "done":
         raise HTTPException(409, "Not Done")
     return job["result"]
-
-# Return output video
-@app.get("/video/{job_id}")
-async def video(job_id: str):
-    job = JOBS.get(job_id)
-    if not job or not job.get("video"):
-        raise HTTPException(404, "No Video")
-    return FileResponse(job["video"], media_type = "video/mp4")
 
 @app.post("/signup")
 async def signup(req: SignupRequest, db: Session = Depends(get_db)):

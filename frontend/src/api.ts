@@ -106,10 +106,6 @@ export async function getResult(jobId: string): Promise<AnalyzeResult> {
   return asJson<AnalyzeResult>(await fetch(`${API_BASE}/result/${jobId}`))
 }
 
-export function videoUrl(jobId: string): string {
-  return `${API_BASE}/video/${jobId}`
-}
-
 export async function signup(email: string, password: string): Promise<{ token: string }> {
   const res = await fetch(`${API_BASE}/signup`, {
     method: 'POST',

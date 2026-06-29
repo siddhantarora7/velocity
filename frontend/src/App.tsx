@@ -16,7 +16,6 @@ export interface FlowState {
   upload: UploadResponse
   jobId?: string
   result?: AnalyzeResult
-  videoSrc?: string
 }
 
 export default function App() {
@@ -41,8 +40,8 @@ export default function App() {
     setPhase('processing')
   }, [])
 
-  const onDone = useCallback((result: AnalyzeResult, videoSrc: string) => {
-    setFlow((f) => (f ? { ...f, result, videoSrc } : f))
+  const onDone = useCallback((result: AnalyzeResult) => {
+    setFlow((f) => (f ? { ...f, result } : f))
     setPhase('results')
   }, [])
 

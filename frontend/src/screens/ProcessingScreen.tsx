@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
-import { getResult, getStatus, videoUrl, type AnalyzeResult } from '../api'
+import { getResult, getStatus, type AnalyzeResult } from '../api'
 import TextureButton from '../components/TextureButton'
 import AiLoader from '../components/AiLoader'
 import Shimmer from '../components/Shimmer'
@@ -20,7 +20,7 @@ export default function ProcessingScreen({
   onCancel,
 }: {
   jobId: string
-  onDone: (result: AnalyzeResult, videoSrc: string) => void
+  onDone: (result: AnalyzeResult) => void
   onCancel: () => void
 }) {
   const [error, setError] = useState<string | null>(null)
@@ -40,7 +40,7 @@ export default function ProcessingScreen({
           settled.current = true
           const result = await getResult(jobId)
           if (!alive) return
-          onDone(result, videoUrl(jobId))
+          onDone(result)
         } else if (status === 'error') {
           settled.current = true
           setError(err ?? 'The analysis failed. Please try again.')
