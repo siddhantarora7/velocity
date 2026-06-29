@@ -1,7 +1,9 @@
 // Thin client for the Velocity FastAPI backend.
 // Contract mirrors app.py exactly, the analyze body uses `distance_m`
 
-export const API_BASE = 'http://localhost:8000'
+// Set VITE_API_BASE to the deployed backend URL in production (Vercel env var);
+// falls back to the local FastAPI server in dev.
+export const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000'
 
 // JWT lives module-level so every request (analyze, shots) can attach it.
 // The AuthProvider is the single writer via setAuthToken.

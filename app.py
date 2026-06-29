@@ -25,7 +25,10 @@ from src.calibration import compute_scale
 
 app = FastAPI(title = "Velocity API", version = "0.1.0")
 
-app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:5173", "http://localhost:3000"], allow_methods = ["*"], allow_headers = ["*"])
+_DEFAULT_ORIGINS = "http://localhost:5173,http://localhost:3000"
+ALLOWED_ORIGINS = [o.strip() for o in os.getenv("ALLOWED_ORIGINS", _DEFAULT_ORIGINS).split(",") if o.strip()]
+
+app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_methods = ["*"], allow_headers = ["*"])
 
 MODEL = YOLO("yolov8n.pt") # Load model globally
 STORAGE = os.path.join(tempfile.gettempdir(), "velocity_storage")

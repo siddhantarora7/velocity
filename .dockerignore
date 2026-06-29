@@ -1,0 +1,15 @@
+# Keep the build context (and image) small — the backend doesn't need any of this.
+frontend
+.venv
+venv
+node_modules
+.git
+.github
+data
+__pycache__
+**/__pycache__
+*.pyc
+*.db
+.env
+docs
+.vercel

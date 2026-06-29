@@ -1,9 +1,16 @@
+import os
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from datetime import datetime
 
-# Create db
-engine = create_engine("sqlite:///velocity.db", connect_args = {"check_same_thread": False})
+# For deployment: fall to sqlite if postgres unavailable
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///velocity.db")
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+# Initialize our databse via engine
+connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+engine = create_engine(DATABASE_URL, connect_args = connect_args)
 SessionLocal = sessionmaker(bind = engine, autoflush = False, autocommit = False)
 Base = declarative_base()
 

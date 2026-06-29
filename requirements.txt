@@ -1,6 +1,16 @@
-numpy<2
-opencv-python<4.12
-streamlit
-streamlit-image-coordinates
+# FastAPI ML backend. Heavy deps (torch, opencv) come in transitively via
+# ultralytics — this service is meant for a container host, NOT a serverless
+# function. opencv-python-headless avoids GUI/libGL deps on servers.
+fastapi
+uvicorn[standard]
+python-multipart
+sqlalchemy
+passlib[bcrypt]
+python-jose[cryptography]
+python-dotenv
+psycopg2-binary
 ultralytics
+opencv-python-headless
+numpy<2
 filterpy
+matplotlib
