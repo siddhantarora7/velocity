@@ -86,3 +86,7 @@ Auth is optional here. Accounts can be used to track results over time (no exter
 On `/signup` or `/login`, we hash the password (`bcrypt`) and return a JWT (JSON Web Token). The frontend uses this token by attaching it to an `Authorization: Bearer <token>` header on later requests.
 
 When a logged-in user runs a video on the pipeline, we use SQL to write a new row onto the `shots` table (top speed, launch speed, timestamp). The `/shots` endpoint then returns the user's saved kicks for the history screen.
+
+## Attribution
+
+Some UI Components derived from [https://21st.dev/community/components](21st.dev) and [https://www.cult-ui.com/](Cult UI). All backend code, auth, deployment, containzerization, designs done by hand, frontend and UI implementation aided by Claude Code and online components.
