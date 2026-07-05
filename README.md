@@ -89,4 +89,4 @@ When a logged-in user runs a video on the pipeline, we use SQL to write a new ro
 
 ## Attribution
 
-Some UI Components derived from [https://21st.dev/community/components](21st.dev) and [https://www.cult-ui.com/](Cult UI). All backend code, auth, deployment, containerization, designs done by hand, frontend and UI implementation aided by Claude Code and online components.
+Some UI Components derived from [21st.dev](https://21st.dev/community/components) and [Cult UI](https://www.cult-ui.com/). All backend code, auth, deployment, containerization, designs done by hand, frontend and UI implementation aided by Claude Code and online components.
