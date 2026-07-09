@@ -11,7 +11,7 @@ export default function HistoryScreen({
 }: {
   onRequireLogin: () => void
 }) {
-  const { isAuthed } = useAuth()
+  const { isAuthed, expired } = useAuth()
   const [shots, setShots] = useState<Shot[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -35,8 +35,9 @@ export default function HistoryScreen({
           <p className="eyebrow">History</p>
           <h1 className="headline">Log in to see your shots</h1>
           <p className="subhead">
-            Your analyzed strikes are saved to your account so you can track them
-            over time.
+            {expired
+              ? 'Your session expired — log in again to see your shots.'
+              : 'Your analyzed strikes are saved to your account so you can track them over time.'}
           </p>
         </div>
         <div className="hist-empty glass">

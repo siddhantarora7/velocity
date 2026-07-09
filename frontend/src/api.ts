@@ -9,6 +9,25 @@ export const API_BASE = import.meta.env.VITE_API_BASE ?? 'http://localhost:8000'
 // The AuthProvider is the single writer via setAuthToken.
 const TOKEN_KEY = 'velocity_token'
 let authToken: string | null = localStorage.getItem(TOKEN_KEY)
+if (authToken && tokenExpired(authToken)) setAuthToken(null)
+
+// A JWT payload is readable without the secret — check `exp` up front so a
+// token from a previous week doesn't masquerade as a live login.
+function tokenExpired(token: string): boolean {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+    return typeof payload.exp === 'number' && payload.exp * 1000 <= Date.now()
+  } catch {
+    return true // unreadable token is as good as expired
+  }
+}
+
+// AuthProvider registers here so React state follows when a request reveals
+// the session is dead (expired token, or the server's user table was wiped).
+let sessionExpiredListener: (() => void) | null = null
+export function onSessionExpired(listener: () => void) {
+  sessionExpiredListener = listener
+}
 
 export function setAuthToken(token: string | null) {
   authToken = token
@@ -125,5 +144,10 @@ export async function login(email: string, password: string): Promise<{ token: s
 }
 
 export async function listShots(): Promise<Shot[]> {
-  return asJson<Shot[]>(await fetch(`${API_BASE}/shots`, { headers: authHeader() }))
+  const res = await fetch(`${API_BASE}/shots`, { headers: authHeader() })
+  if (res.status === 401) {
+    setAuthToken(null)
+    sessionExpiredListener?.()
+  }
+  return asJson<Shot[]>(res)
 }
