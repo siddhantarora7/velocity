@@ -13,7 +13,7 @@ license: mit
 
 *Measure your soccer ball kick speed*
 
-A YOLO model featuring Kalman filtering and a speed-estimation algorithm, alongside a clean UI/UX powered by FastAPI. Made for personal use and Hackclub Horizons.
+A YOLO model featuring scale calibration and a speed-estimation algorithm, alongside a clean UI/UX powered by FastAPI. Made for personal use and Hackclub Horizons.
 
 ## Motivation
 
@@ -24,7 +24,7 @@ The app was made to provide a reliable, appealing, and simple-to-use method of k
 - **Backend**: Python, FastAPI
 - **Frontend**: React, TypeScript (JSX)
 - **Computer Vision**: YOLOv8n (`ultralytics`), `cv2`
-- **Database**: Primary: Postgres, Secondary: SQLite
+- **Database**: Postgres (Supabase), with SQLite fallback for local dev
 - **Containerization**: Docker
 - **Deployment**: Frontend: Vercel, Backend: HuggingFace Spaces (runs YOLO model efficiently)
 
@@ -34,7 +34,7 @@ The frontend was built using a reliable and highly customizable tech stack of Re
 
 The app features 5 main screens:
 
-1. **Calibration**: the user uses sliders to provide the scale (meters/pixel) for their video
+1. **Calibration**: the user clicks two points a known distance apart to set the scale (meters/pixel)
 2. **History**: a collection of a logged-in user's past shots and statistics
 3. **Processing**: a loading screen to signify the model running
 4. **Results**: the kick's top speed, launch speed, etc.
@@ -74,9 +74,8 @@ The `/src` directory comprises all logic of the code including scale calibration
 Each stage in the pipeline goes onto the next:
 
 1. **Detection** (`detection.py`, `pipeline.py`): Runs the YOLO model on each frame. Frames where the ball is missed are recorded as gaps rather than skipped, so later stages know a frame is missing.
-2. **Tracking** (`tracking.py`): Feeds the positions into a constant-velocity Kalman filter which smooths detection jitter, and fills recorded gaps by projecting trajectory from the ball's last known velocity.
-3. **Kick Detection** (`kick.py`): Uses the smoothed frames to find the kick using a sustained jump threshold. Returns the window of frames comprising the launch.
-4. **Speed Estimation** (`speed.py`, `calibration.py`): Converts pixel motion to a real scale using the inputted calibration scale.
+2. **Kick Detection** (`kick.py`): Scans ball detections for a sustained speed spike above an adaptive median threshold. Returns the window of frames comprising the launch.
+3. **Speed Estimation** (`speed.py`, `calibration.py`): Converts pixel motion to km/h using the calibration scale; top speed is measured inside the kick window, and launch speed comes from a trajectory fit.
 
 ### Calibration
 
