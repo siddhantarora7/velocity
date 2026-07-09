@@ -124,7 +124,9 @@ def _run(job_id, path, p1, p2, distance_m, user_id = None):
         frames, fps = run_detection(path, MODEL, 0.25)
         smooth = clean(frames, fps)
         window = kick(smooth, fps)
-        res = compute_speeds(smooth, fps, mpp, window)
+        if window is not None:
+            window = (smooth[window[0]][0], smooth[window[1]][0]) # list indices -> frame indices
+        res = compute_speeds(frames, fps, mpp, window)
         fastest_t, fastest_kmh = max(res["speeds"], key = lambda x: x[1])
 
         if user_id is not None:

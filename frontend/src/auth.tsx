@@ -16,7 +16,7 @@ interface AuthValue {
   email: string | null
   isAuthed: boolean
   login: (email: string, password: string) => Promise<void>
-  signup: (email: string, password: string) => Promise<void>
+  signup: (email: string, password: string) => Promise<void>image.pngY
   logout: () => void
 }
 
