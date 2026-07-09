@@ -8,12 +8,17 @@ app_port: 7860
 pinned: false
 license: mit
 ---
-
 # velocity
 
 *Measure your soccer ball kick speed*
 
 A YOLO model featuring scale calibration and a speed-estimation algorithm, alongside a clean UI/UX powered by FastAPI. Made for personal use and Hackclub Horizons.
+
+<img width="1586" height="957" alt="Screenshot 2026-07-08 at 11 43 41 PM" src="https://github.com/user-attachments/assets/23568508-876d-4c67-9d14-07e2b7c2cdd1" />
+<img width="1571" height="959" alt="Screenshot 2026-07-08 at 11 49 01 PM" src="https://github.com/user-attachments/assets/c2d2086a-ee60-448e-9cba-8ad55160bb58" />
+<img width="1566" height="959" alt="Screenshot 2026-07-08 at 11 45 22 PM" src="https://github.com/user-attachments/assets/07a3e3f3-7593-4f30-b65a-88892dd56ef8" />
+<img width="1586" height="958" alt="Screenshot 2026-07-08 at 11 49 30 PM" src="https://github.com/user-attachments/assets/71bbd9d1-c95b-40b9-8d69-8e9aa7b80685" />
+
 
 ## Motivation
 
