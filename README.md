@@ -1,3 +1,14 @@
+---
+title: Velocity Api
+emoji: 👁
+colorFrom: blue
+colorTo: red
+sdk: docker
+app_port: 7860
+pinned: false
+license: mit
+---
+
 # velocity
 
 *Measure your soccer ball kick speed*
