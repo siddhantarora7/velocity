@@ -18,7 +18,6 @@ from sqlalchemy.orm import Session
 from src.db import get_db, User, Shot, SessionLocal
 from src.auth import hash_password, verify_password, create_token, decode_token
 from src.pipeline import run_detection
-from src.tracking import clean
 from src.kick import kick
 from src.speed import compute_speeds
 from src.calibration import compute_scale
@@ -122,12 +121,14 @@ def _run(job_id, path, p1, p2, distance_m, user_id = None):
         JOBS[job_id]["status"] = "running"
         mpp = compute_scale(p1, p2, distance_m) # Meters/pixel
         frames, fps = run_detection(path, MODEL, 0.25)
-        smooth = clean(frames, fps)
-        window = kick(smooth, fps)
+        # Kick detection runs on real detections only: Kalman-smoothed tracks
+        # lag the kick and pad the clip with phantom frames that skew the median.
+        detected = [f for f in frames if f[1] is not None]
+        window = kick(detected, fps)
         if window is not None:
-            window = (smooth[window[0]][0], smooth[window[1]][0]) # list indices -> frame indices
+            window = (detected[window[0]][0], detected[window[1]][0]) # list indices -> frame indices
         res = compute_speeds(frames, fps, mpp, window)
-        fastest_t, fastest_kmh = max(res["speeds"], key = lambda x: x[1])
+        fastest_t, fastest_kmh = res["top"]
 
         if user_id is not None:
             db = SessionLocal()

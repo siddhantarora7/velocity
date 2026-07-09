@@ -14,7 +14,7 @@ def compute_speeds(frames, fps, meters_per_pixel=1.0, window = None):
     # sudden kick and underestimate the peak. `window` is an inclusive
     # (start_frame_idx, end_frame_idx) range of the kick.
     detected = [f for f in frames if f[1] is not None]
-    speeds = []
+    speeds, top = [], None
     for i in range(len(detected) - 1):
         (idx1, cx1, cy1), (idx2, cx2, cy2) = detected[i], detected[i + 1]
         time = (idx2 - idx1) / fps
@@ -22,6 +22,11 @@ def compute_speeds(frames, fps, meters_per_pixel=1.0, window = None):
         pixel_speed = distance / time
         real_speed = pixel_speed * meters_per_pixel * 3.6 # Returns km/h
         speeds.append((idx2 / fps, real_speed))
+        if window is None or window[0] < idx2 <= window[1]:
+            if top is None or real_speed > top[1]:
+                top = (idx2 / fps, real_speed)
+    if top is None and speeds:
+        top = max(speeds, key = lambda x: x[1])
 
     launch_speed = None
     if window is not None:
@@ -33,10 +38,9 @@ def compute_speeds(frames, fps, meters_per_pixel=1.0, window = None):
             vx0, vy0 = np.polyfit(t, xs, 1)[0], 2 * a * t[0] + b
             launch_speed = math.sqrt(vx0*vx0 + vy0*vy0) * meters_per_pixel * 3.6 #km/h
 
-    return {"speeds": speeds, "launch": launch_speed}
+    return {"speeds": speeds, "launch": launch_speed, "top": top}
 
 if __name__ == "__main__":
-    from src.tracking import clean
     from src.kick import kick
 
     model = YOLO("yolov8n.pt")
@@ -44,10 +48,10 @@ if __name__ == "__main__":
     meters_per_pixel = compute_scale(point1, point2, distance_m)
 
     frames, fps = run_detection("data/input/velocity_test.mp4", model, 0.25)
-    smooth = clean(frames, fps) # Smooth first
-    window = kick(smooth, fps)
+    detected = [f for f in frames if f[1] is not None]
+    window = kick(detected, fps)
     if window is not None:
-        window = (smooth[window[0]][0], smooth[window[1]][0]) # list indices -> frame indices
+        window = (detected[window[0]][0], detected[window[1]][0]) # list indices -> frame indices
     res = compute_speeds(frames, fps, meters_per_pixel, window)
-    print('Fastest:', max(res["speeds"], key = lambda x: x[1]))
+    print('Fastest:', res["top"])
     print('Launch', res["launch"])
