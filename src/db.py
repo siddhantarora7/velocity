@@ -7,6 +7,9 @@ from datetime import datetime
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///velocity.db")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+if os.getenv("DATABASE_URL") is None:
+    print("WARNING: DATABASE_URL not set, using local sqlite. On ephemeral hosts "
+          "(HF Spaces, Render free tier) users and shots are WIPED on every restart.")
 
 # Initialize our databse via engine
 connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}

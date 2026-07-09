@@ -71,9 +71,15 @@ def current_user(authorization: str = Header(None), db: Session = Depends(get_db
         raise HTTPException(401, "Not authenticated!")
     return user
 
-# If user is not logged in, we can still store their shots
+# Anonymous requests (no header) are fine, but a token that no longer resolves
+# to a user must fail loudly — otherwise the shot is silently never saved.
 def current_user_2(authorization: str = Header(None), db: Session = Depends(get_db)):
-    return _user_from_auth(authorization, db)
+    if not authorization:
+        return None
+    user = _user_from_auth(authorization, db)
+    if user is None:
+        raise HTTPException(401, "Session expired, please log in again")
+    return user
 
 
 # FastAPI Endpoints

@@ -29,6 +29,13 @@ export function onSessionExpired(listener: () => void) {
   sessionExpiredListener = listener
 }
 
+function dropSessionOn401(res: Response) {
+  if (res.status === 401) {
+    setAuthToken(null)
+    sessionExpiredListener?.()
+  }
+}
+
 export function setAuthToken(token: string | null) {
   authToken = token
   if (token) localStorage.setItem(TOKEN_KEY, token)
@@ -114,6 +121,7 @@ export async function analyze(params: {
       distance_m: params.distanceM,
     }),
   })
+  dropSessionOn401(res)
   return asJson<{ job_id: string }>(res)
 }
 
@@ -145,9 +153,6 @@ export async function login(email: string, password: string): Promise<{ token: s
 
 export async function listShots(): Promise<Shot[]> {
   const res = await fetch(`${API_BASE}/shots`, { headers: authHeader() })
-  if (res.status === 401) {
-    setAuthToken(null)
-    sessionExpiredListener?.()
-  }
+  dropSessionOn401(res)
   return asJson<Shot[]>(res)
 }
